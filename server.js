@@ -102,30 +102,47 @@ app.post('/api/venda', async (req, res) => {
         return res.status(400).send('Carrinho vazio.');
     }
 
+    let totalVenda = 0;
+    const itensComDesconto = [];
+
     try {
-        const totalVenda = itensVendidos.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
+        for (const item of itensVendidos) {
+            const { _id, nome, preco: precoUnitario, quantidade } = item;
+            let precoFinalItem = 0;
+            let quantidadeDescontada = Math.floor(quantidade / 3);
+            let quantidadeRestante = quantidade % 3;
+
+            if (quantidadeDescontada > 0) {
+                precoFinalItem += quantidadeDescontada * 50; // Aplica o preço de 3 por 50
+            }
+            if (quantidadeRestante > 0) {
+                precoFinalItem += quantidadeRestante * precoUnitario; // Aplica o preço normal para as unidades restantes
+            }
+
+            totalVenda += precoFinalItem;
+            itensComDesconto.push({
+                _id,
+                nome,
+                quantidade,
+                preco: precoFinalItem / quantidade // Preço médio por unidade após o desconto
+            });
+
+            // Atualizar o estoque dos licores vendidos (movi para dentro do loop para garantir que seja feito para cada item)
+            const licor = await Licor.findById(_id);
+            if (licor) {
+                licor.estoque -= quantidade;
+                licor.vendidos += quantidade;
+                await licor.save();
+            }
+        }
 
         const novaVenda = new Venda({
-            itens: itensVendidos.map(item => ({
-                nome: item.nome,
-                quantidade: item.quantidade,
-                preco: item.preco // Já estará com o desconto aplicado
-            })),
+            itens: itensComDesconto,
             total: totalVenda,
             data: new Date()
         });
 
         const vendaSalva = await novaVenda.save();
-
-        // Atualizar o estoque dos licores vendidos
-        for (const item of itensVendidos) {
-            const licor = await Licor.findById(item._id);
-            if (licor) {
-                licor.estoque -= item.quantidade;
-                licor.vendidos += item.quantidade;
-                await licor.save();
-            }
-        }
 
         res.status(200).json({ message: 'Venda registrada com sucesso', venda: vendaSalva });
 
