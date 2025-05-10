@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Controle de Licores</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      color: #333;
+    }
+
+    .licor, .gasto, .venda {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 18px;
+    }
+
+   
+.licor button { /* Estilos gerais para todos os botões dentro de .licor */
+  margin: 5px 5px 0 0;
+  padding: 8px 12px;
+  border: none;
+  color: rgb(255, 255, 255);
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn-carrinho-item {
+  background-color: #dad74b; /* Cor para o botão + Carrinho */
+}
+
+.btn-carrinho-item:hover {
+  background-color: #d9fd37; /* Cor ao passar o mouse */
+}
+
+.btn-estoque-item {
+  background-color: #007bff; /* Cor para o botão + Estoque */
+}
+
+.btn-estoque-item:hover {
+  background-color: #0056b3; /* Cor ao passar o mouse */
+}
+
+.btn-finalizar {
+  background-color: #218838; /* Cor de fundo azul */
+  color: white; /* Cor do texto branco */
+  padding: 10px 15px; /* Aumenta o tamanho do botão */
+  border: none; /* Remove a borda padrão */
+  border-radius: 5px; /* Arredonda as bordas */
+  font-size: 16px; /* Tamanho da fonte */
+  font-weight: 700;
+  cursor: pointer; /* Muda o cursor ao passar por cima */
+  margin-top: 10px; /* Adiciona um pouco de espaço acima do botão */
+}
+
+.btn-finalizar:hover {
+  background-color: #16ac2f; /* Cor de fundo mais escura ao passar o mouse */
+}
+
+
+    input[type="number"] {
+      width: 60px;
+      font-size: 16px;
+      margin: 0 10px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+  
+
+.editar:hover {
+  background-color: #0056b3; 
+}
+
+#gastos-list li {
+  display: flex; /* Ativa o Flexbox para os itens da lista */
+  align-items: center; /* Alinha verticalmente os itens ao centro */
+  justify-content: space-between; /* Coloca espaço entre o texto e o botão */
+  margin-bottom: 5px; /* Adiciona um pouco de espaço abaixo de cada item */
+}
+
+.btn-editar-gasto {
+  /* Seus estilos existentes para o botão editar... */
+  background-color: #ffc107;
+  color: #333;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 10px; /* Adiciona um pouco mais de espaço à esquerda do botão */
+}
+
+.btn-editar-gasto:hover {
+  background-color: #e0a800;
+}
+
+
+    #licores {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .licor-info {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+
+     .export-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+
+  .export-button:hover {
+    background-color: #0056b3;
+  }
+     
+  </style>
+</head>
+<body>
+  <button class="logout-button" onclick="window.location.href='/logout'">Sair</button>
+  <h1>Controle de Produtos - Licores</h1>
+
+  <h2>Licores Disponíveis</h2>
+  <div id="licores"></div>
+
+  <h2>Carrinho</h2>
+  <ul id="carrinho"></ul>
+  <p class="total" id="total">Total: R$ 0,00</p>
+  <button class="btn-finalizar" onclick="finalizarVenda()">Finalizar Venda</button>
+
+  <h2>Relatório de Vendas</h2>
+  <button id="zerar-relatorio" style="background-color: #dc3545; color: white; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-bottom: 10px;">Zerar Relatório de Vendas</button>
+    <ul id="relatorio-vendas"></ul>
+
+  <h2>Gastos</h2>
+  <ul id="gastos-list"></ul>
+
+  <h2>Resumo Financeiro</h2>
+  <p style="font-size:18px;">Valor Bruto: R$ <span id="valor-bruto">0,00</span></p>
+  <p style="font-size:18px;">Valor Líquido: R$ <span id="valor-liquido">0,00</span></p>
+  <p style="font-size:18px; font-weight:bold;">Valor Total: R$ <span id="valor-total">0,00</span></p>
+  <button onclick="gerarRelatorio()">Gerar Relatório (PDF/Imprimir)</button>
+
+
+
+
+  <div id="edicao-licores-container" class="edit-licor-container">
+        <h2>Editar Licores</h2>
+        <div id="lista-edicao-licores">
+
+          
+            </div>
+        <button id="editar-licores-btn">Editar Licores</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
