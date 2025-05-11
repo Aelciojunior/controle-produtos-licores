@@ -152,10 +152,12 @@ app.post('/api/venda', async (req, res) => {
 });
 
 function calcularPrecoComDescontoBackend(precoUnitario, quantidade) {
-    const numGruposDeTres = Math.floor(quantidade / 3);
-    const quantidadeRestante = quantidade % 3;
-    return (numGruposDeTres * 50) + (quantidadeRestante * precoUnitario);
+    const gruposDeTres = Math.floor(quantidade / 3);
+    const restante = quantidade % 3;
+
+    return (gruposDeTres * 50) + (restante * 20);
 }
+
 
 app.post('/api/estoque/:id', async (req, res) => {
     const licor = await Licor.findById(req.params.id);
