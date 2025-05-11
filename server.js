@@ -104,6 +104,9 @@ app.post('/api/venda', async (req, res) => {
 
     let totalVenda = 0;
     const itensComDesconto = [];
+    
+    // Variáveis para o cálculo total de licores (independente do sabor)
+    let totalLicores = 0;
 
     try {
         const carrinhoAgrupado = {};
@@ -112,18 +115,24 @@ app.post('/api/venda', async (req, res) => {
                 carrinhoAgrupado[item._id] = { ...item, quantidade: 0 };
             }
             carrinhoAgrupado[item._id].quantidade += item.quantidade;
+            totalLicores += item.quantidade; // Soma total de licores
         }
 
+        // Calculando o total geral com desconto com base na quantidade total de licores
+        const precoFinalComDesconto = calcularPrecoComDesconto(totalLicores);
+
+        // Agora vamos calcular o valor por item, aplicando o desconto proporcionalmente
         for (const id in carrinhoAgrupado) {
             const item = carrinhoAgrupado[id];
-            const { nome, preco: precoUnitario, quantidade } = item;
-            const precoFinalItem = calcularPrecoComDescontoBackend(precoUnitario, quantidade);
-            totalVenda += precoFinalItem;
+            const { nome, preco, quantidade } = item;
+            const precoUnitarioComDesconto = precoFinalComDesconto / totalLicores * quantidade; // Aplica desconto proporcional
+
+            totalVenda += precoUnitarioComDesconto;
             itensComDesconto.push({
                 _id: id,
                 nome,
                 quantidade,
-                preco: precoFinalItem / quantidade // Preço médio por unidade após o desconto
+                preco: precoUnitarioComDesconto / quantidade // Preço médio por unidade após o desconto
             });
 
             // Atualizar o estoque dos licores vendidos
