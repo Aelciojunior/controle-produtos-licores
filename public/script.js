@@ -111,21 +111,10 @@ async function finalizarVenda() {
 
     if (!confirm("Tem certeza que deseja finalizar a venda?")) return;
 
-    let carrinhoParaVenda = [...carrinho];
-    let totalOriginal = carrinhoParaVenda.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
-
-    if (carrinhoParaVenda.reduce((acc, item) => acc + item.quantidade, 0) >= 3) {
-        const descontoPorItem = (totalOriginal - 50) / carrinhoParaVenda.reduce((acc, item) => acc + item.quantidade, 0);
-        carrinhoParaVenda = carrinhoParaVenda.map(item => ({
-            ...item,
-            preco: Math.max(0.01, item.preco - descontoPorItem) // Garante que o preço não seja negativo ou zero
-        }));
-    }
-
     const res = await fetch('/api/venda', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(carrinhoParaVenda)
+        body: JSON.stringify(carrinho) // Envia o carrinho como está para o backend
     });
 
     if (res.ok) {
