@@ -127,7 +127,7 @@ app.post('/api/venda', async (req, res) => {
             const { nome, preco, quantidade } = item;
             const precoUnitarioComDesconto = precoFinalComDesconto / totalLicores * quantidade; // Aplica desconto proporcional
 
-            totalVenda += precoUnitarioComDesconto;
+            totalVenda += precoUnitarioComDesconto; // Soma o preço do item com desconto
             itensComDesconto.push({
                 _id: id,
                 nome,
@@ -146,7 +146,7 @@ app.post('/api/venda', async (req, res) => {
 
         const novaVenda = new Venda({
             itens: itensComDesconto,
-            total: totalVenda,
+            total: totalVenda, // O total da venda
             data: new Date()
         });
 
@@ -160,12 +160,15 @@ app.post('/api/venda', async (req, res) => {
     }
 });
 
-function calcularPrecoComDescontoBackend(precoUnitario, quantidade) {
-    const gruposDeTres = Math.floor(quantidade / 3);
-    const restante = quantidade % 3;
+// Função para calcular o total com base no número total de licores
+function calcularPrecoComDesconto(totalLicores) {
+    const gruposDeTres = Math.floor(totalLicores / 3);
+    const restante = totalLicores % 3;
 
-    return (gruposDeTres * 50) + (restante * 20);
+    // Aplica R$50 por cada 3 licores, R$20 por cada licor restante
+    return (gruposDeTres * 50) + (restante * 20);  
 }
+
 
 
 app.post('/api/estoque/:id', async (req, res) => {
