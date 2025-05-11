@@ -73,15 +73,24 @@ function atualizarCarrinho() {
     const ul = document.getElementById('carrinho');
     const totalEl = document.getElementById('total');
     ul.innerHTML = '';
-    let total = 0;
+    let precoTotalCarrinho = 0;
+    let contagemItens = {};
 
     carrinho.forEach(item => {
-        const precoComDesconto = calcularPrecoComDesconto(item.preco, item.quantidade);
-        ul.innerHTML += `<li>${item.nome} x ${item.quantidade} - R$ ${precoComDesconto.toFixed(2)}</li>`;
-        total += precoComDesconto;
+        if (!contagemItens[item.nome]) {
+            contagemItens[item.nome] = { item: item, quantidade: 0 };
+        }
+        contagemItens[item.nome].quantidade += item.quantidade;
     });
 
-    totalEl.textContent = `Total: R$ ${total.toFixed(2)}`;
+    for (const nomeItem in contagemItens) {
+        const { item, quantidade } = contagemItens[nomeItem];
+        const precoComDescontoItem = calcularPrecoComDesconto(item.preco, quantidade);
+        ul.innerHTML += `<li>${item.nome} x ${quantidade} - R$ ${precoComDescontoItem.toFixed(2)}</li>`;
+        precoTotalCarrinho += precoComDescontoItem;
+    }
+
+    totalEl.textContent = `Total: R$ ${precoTotalCarrinho.toFixed(2)}`;
 }
 
 function calcularPrecoComDesconto(precoUnitario, quantidade) {

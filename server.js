@@ -106,29 +106,28 @@ app.post('/api/venda', async (req, res) => {
     const itensComDesconto = [];
 
     try {
+        const carrinhoAgrupado = {};
         for (const item of itensVendidos) {
-            const { _id, nome, preco: precoUnitario, quantidade } = item;
-            let precoFinalItem = 0;
-            let quantidadeDescontada = Math.floor(quantidade / 3);
-            let quantidadeRestante = quantidade % 3;
-
-            if (quantidadeDescontada > 0) {
-                precoFinalItem += quantidadeDescontada * 50; // Aplica o preço de 3 por 50
+            if (!carrinhoAgrupado[item._id]) {
+                carrinhoAgrupado[item._id] = { ...item, quantidade: 0 };
             }
-            if (quantidadeRestante > 0) {
-                precoFinalItem += quantidadeRestante * precoUnitario; // Aplica o preço normal para as unidades restantes
-            }
+            carrinhoAgrupado[item._id].quantidade += item.quantidade;
+        }
 
+        for (const id in carrinhoAgrupado) {
+            const item = carrinhoAgrupado[id];
+            const { nome, preco: precoUnitario, quantidade } = item;
+            const precoFinalItem = calcularPrecoComDescontoBackend(precoUnitario, quantidade);
             totalVenda += precoFinalItem;
             itensComDesconto.push({
-                _id,
+                _id: id,
                 nome,
                 quantidade,
                 preco: precoFinalItem / quantidade // Preço médio por unidade após o desconto
             });
 
-            // Atualizar o estoque dos licores vendidos (movi para dentro do loop para garantir que seja feito para cada item)
-            const licor = await Licor.findById(_id);
+            // Atualizar o estoque dos licores vendidos
+            const licor = await Licor.findById(id);
             if (licor) {
                 licor.estoque -= quantidade;
                 licor.vendidos += quantidade;
@@ -151,6 +150,12 @@ app.post('/api/venda', async (req, res) => {
         res.status(500).send('Erro ao registrar venda');
     }
 });
+
+function calcularPrecoComDescontoBackend(precoUnitario, quantidade) {
+    const numGruposDeTres = Math.floor(quantidade / 3);
+    const quantidadeRestante = quantidade % 3;
+    return (numGruposDeTres * 50) + (quantidadeRestante * precoUnitario);
+}
 
 app.post('/api/estoque/:id', async (req, res) => {
     const licor = await Licor.findById(req.params.id);
