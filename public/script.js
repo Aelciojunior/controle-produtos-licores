@@ -74,16 +74,20 @@ function atualizarCarrinho() {
     const totalEl = document.getElementById('total');
     ul.innerHTML = '';
     let total = 0;
-    let totalItens = 0;
 
     carrinho.forEach(item => {
-        totalItens += item.quantidade;
-        ul.innerHTML += `<li>${item.nome} x ${item.quantidade}</li>`;
-        total += item.preco * item.quantidade;
+        const precoComDesconto = calcularPrecoComDesconto(item.preco, item.quantidade);
+        ul.innerHTML += `<li>${item.nome} x ${item.quantidade} - R$ ${precoComDesconto.toFixed(2)}</li>`;
+        total += precoComDesconto;
     });
 
-    if (totalItens >= 3) total = 50;
     totalEl.textContent = `Total: R$ ${total.toFixed(2)}`;
+}
+
+function calcularPrecoComDesconto(precoUnitario, quantidade) {
+    const numGruposDeTres = Math.floor(quantidade / 3);
+    const quantidadeRestante = quantidade % 3;
+    return (numGruposDeTres * 50) + (quantidadeRestante * precoUnitario);
 }
 
 function limparCarrinho() {
