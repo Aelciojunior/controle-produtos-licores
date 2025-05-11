@@ -86,7 +86,12 @@ function atualizarCarrinho() {
     for (const nomeItem in contagemItens) {
         const { item, quantidade } = contagemItens[nomeItem];
         const precoComDescontoItem = calcularPrecoComDesconto(item.preco, quantidade);
-        ul.innerHTML += `<li>${item.nome} x ${quantidade} - R$ ${precoComDescontoItem.toFixed(2)}</li>`;
+        ul.innerHTML += `
+            <li>
+                ${item.nome} x ${quantidade} - R$ ${precoComDescontoItem.toFixed(2)}
+                <button class="btn-remover-carrinho" onclick="removerDoCarrinho('${item._id}')">x</button>
+            </li>
+        `;
         precoTotalCarrinho += precoComDescontoItem;
     }
 
@@ -124,6 +129,12 @@ async function finalizarVenda() {
         alert("Erro ao finalizar a venda.");
     }
 }
+
+function removerDoCarrinho(id) {
+    carrinho = carrinho.filter(item => item._id !== id);
+    atualizarCarrinho();
+}
+
 
 async function adicionarEstoque(id) {
     const qtdInput = document.getElementById(`qtd-${id}`);
